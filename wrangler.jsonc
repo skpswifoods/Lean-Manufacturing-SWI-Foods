@@ -1,0 +1,77 @@
+// wrangler.jsonc
+{
+  "name": "lean-manufacturing-qms-integrated",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-03-07",
+  "compatibility_flags": ["nodejs_compat"],
+
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "qa_factory_db",
+      "database_id": "YOUR_DB_ID"
+    }
+  ],
+
+  "kv_namespaces": [
+    {
+      "binding": "MASTER_DATA",
+      "id": "YOUR_KV_ID",
+      "preview_id": "YOUR_PREVIEW_ID"
+    }
+  ],
+
+  "analytics_engine_datasets": [
+    {
+      "binding": "QA_EVENTS",
+      "dataset": "qa_monitoring"
+    }
+  ],
+
+  "queues": {
+    "producers": [
+      {
+        "name": "qa-queue",
+        "binding": "QUEUE"
+      }
+    ],
+    "consumers": [
+      {
+        "name": "qa-queue",
+        "max_batch_size": 10,
+        "max_batch_timeout": 30,
+        "max_retries": 3,
+        "dead_letter_queue": "qa-queue-dlq"
+      }
+    ]
+  },
+
+  "vars": {
+    "ENVIRONMENT": "production",
+    "GOOGLE_SHEET_ID": "YOUR_SHEET_ID",
+    "SLACK_CHANNEL": "#qa-alerts",
+    "TEAMS_SPACE_ID": "YOUR_SPACE_ID"
+  },
+
+  "env": {
+    "production": {
+      "routes": [
+        {
+          "pattern": "api.yourdomain.com/*",
+          "zone_name": "yourdomain.com"
+        }
+      ],
+      "secrets": [
+        "GOOGLE_SERVICE_ACCOUNT_KEY",
+        "SLACK_WEBHOOK_URL",
+        "TEAMS_WEBHOOK_URL",
+        "GOOGLE_CHAT_WEBHOOK_URL"
+      ]
+    }
+  },
+
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  }
+}

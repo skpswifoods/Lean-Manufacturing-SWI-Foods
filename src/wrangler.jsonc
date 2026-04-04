@@ -1,0 +1,22 @@
+// wrangler.jsonc
+{
+  "name": "lean-swi-foods",
+  "main": "src/master-data-init.ts",
+  "compatibility_date": "2025-03-07",
+  "compatibility_flags": ["nodejs_compat"],
+
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "qa_factory_db",
+      "database_id": "YOUR_DB_ID"
+    }
+  ],
+
+  "kv_namespaces": [
+    {
+      "binding": "MASTER_DATA",
+      "id": "YOUR_KV_ID",
+      "preview_id": "YOUR_PREVIEW_ID"
+    }
+  ],

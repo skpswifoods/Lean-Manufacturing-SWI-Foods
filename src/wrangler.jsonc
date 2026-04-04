@@ -20,8 +20,7 @@
       "preview_id": "YOUR_PREVIEW_ID"
     }
   ],
-{
+
   "observability": {
     "enabled": false
   }
-}

@@ -19,8 +19,6 @@
       "id": "YOUR_KV_ID",
       "preview_id": "YOUR_PREVIEW_ID"
     }
-  ],
-
   "observability": {
     "enabled": false
   }

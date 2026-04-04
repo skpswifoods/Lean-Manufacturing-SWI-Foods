@@ -192,7 +192,7 @@ class GoogleWorkspaceIntegration {
               record.lot_number,
               record.result,
               record.inspector,
-              `=IF(F${row}="PASS","✓","✗")`, // Formula for visual status
+              record.result === 'PASS' ? '✓' : '✗',
             ],
           ],
         },
@@ -544,16 +544,6 @@ class GoogleWorkspaceIntegration {
                         },
                       ]
                     : []),
-                ],
-              },
-            ],
-            sections: [
-              {
-                header: 'Details',
-                widgets: [
-                  {
-                    divider: {},
-                  },
                 ],
               },
             ],

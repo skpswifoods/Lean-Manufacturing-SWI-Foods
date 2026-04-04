@@ -1,0 +1,262 @@
+// wrangler.jsonc
+{
+  "name": "lean-swi-foods",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-03-07",
+  "compatibility_flags": ["nodejs_compat"],
+
+  // ==================== DATABASE CONFIGURATION ====================
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "qa_factory_db",
+      "database_id": "YOUR_D1_DATABASE_ID",
+      "migrations_dir": "src/migrations"
+    }
+  ],
+
+  // ==================== KEY-VALUE STORAGE ====================
+  "kv_namespaces": [
+    {
+      "binding": "MASTER_DATA",
+      "id": "YOUR_KV_MASTER_DATA_ID",
+      "preview_id": "YOUR_KV_PREVIEW_ID"
+    },
+    {
+      "binding": "SESSION_STORE",
+      "id": "YOUR_KV_SESSION_ID",
+      "preview_id": "YOUR_KV_SESSION_PREVIEW_ID"
+    },
+    {
+      "binding": "CACHE",
+      "id": "YOUR_KV_CACHE_ID",
+      "preview_id": "YOUR_KV_CACHE_PREVIEW_ID"
+    }
+  ],
+
+  // ==================== ANALYTICS ====================
+  "analytics_engine_datasets": [
+    {
+      "binding": "QA_EVENTS",
+      "dataset": "qa_monitoring"
+    },
+    {
+      "binding": "PRODUCTION_METRICS",
+      "dataset": "production_metrics"
+    },
+    {
+      "binding": "DEVIATION_TRACKING",
+      "dataset": "deviation_tracking"
+    }
+  ],
+
+  // ==================== MESSAGE QUEUE ====================
+  "queues": {
+    "producers": [
+      {
+        "name": "qa-events-queue",
+        "binding": "QUEUE"
+      }
+    ],
+    "consumers": [
+      {
+        "name": "qa-events-queue",
+        "max_batch_size": 10,
+        "max_batch_timeout": 30,
+        "max_retries": 3,
+        "dead_letter_queue": "qa-events-dlq",
+        "max_concurrency": 5
+      }
+    ]
+  },
+
+  // ==================== DURABLE OBJECTS ====================
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "BATCH_STATE",
+        "class_name": "BatchStateManager"
+      },
+      {
+        "name": "PRODUCTION_MONITOR",
+        "class_name": "ProductionMonitor"
+      }
+    ]
+  },
+
+  // ==================== DURABLE OBJECTS MIGRATIONS ====================
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_classes": ["BatchStateManager", "ProductionMonitor"]
+    }
+  ],
+
+  // ==================== ENVIRONMENT VARIABLES ====================
+  "vars": {
+    "ENVIRONMENT": "production",
+    "LOG_LEVEL": "info",
+    "API_VERSION": "v1",
+    "GOOGLE_SHEET_ID": "YOUR_GOOGLE_SHEET_ID",
+    "SLACK_CHANNEL": "#qa-alerts",
+    "TEAMS_SPACE_ID": "YOUR_TEAMS_SPACE_ID",
+    "ALERT_SEVERITY_THRESHOLD": "major",
+    "BATCH_TIMEOUT_HOURS": "24",
+    "INSPECTION_FORM_ID": "YOUR_GOOGLE_FORM_ID",
+    "QA_DASHBOARD_URL": "https://dashboard.yourdomain.com",
+    "CAPA_AUTO_ASSIGN": "true",
+    "EMAIL_NOTIFICATION_ENABLED": "true"
+  },
+
+  // ==================== ROUTES & DOMAINS ====================
+  "routes": [
+    {
+      "pattern": "api.yourdomain.com/api/*",
+      "zone_name": "yourdomain.com"
+    }
+  ],
+
+  // ==================== ENVIRONMENT-SPECIFIC CONFIGURATION ====================
+  "env": {
+    "production": {
+      "name": "lean-manufacturing-qms-prod",
+      "routes": [
+        {
+          "pattern": "api.yourdomain.com/*",
+          "zone_name": "yourdomain.com"
+        }
+      ],
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "qa_factory_db_prod",
+          "database_id": "YOUR_PROD_D1_DATABASE_ID"
+        }
+      ],
+      "kv_namespaces": [
+        {
+          "binding": "MASTER_DATA",
+          "id": "YOUR_PROD_KV_MASTER_DATA_ID",
+          "preview_id": "YOUR_PROD_KV_PREVIEW_ID"
+        },
+        {
+          "binding": "SESSION_STORE",
+          "id": "YOUR_PROD_KV_SESSION_ID",
+          "preview_id": "YOUR_PROD_KV_SESSION_PREVIEW_ID"
+        },
+        {
+          "binding": "CACHE",
+          "id": "YOUR_PROD_KV_CACHE_ID",
+          "preview_id": "YOUR_PROD_KV_CACHE_PREVIEW_ID"
+        }
+      ],
+      "vars": {
+        "ENVIRONMENT": "production",
+        "LOG_LEVEL": "warn",
+        "GOOGLE_SHEET_ID": "YOUR_PROD_GOOGLE_SHEET_ID",
+        "SLACK_CHANNEL": "#qa-alerts-production",
+        "ALERT_SEVERITY_THRESHOLD": "major",
+        "CAPA_AUTO_ASSIGN": "true",
+        "EMAIL_NOTIFICATION_ENABLED": "true",
+        "ENABLE_RATE_LIMITING": "true",
+        "RATE_LIMIT_REQUESTS_PER_MINUTE": "100"
+      },
+      "analytics_engine_datasets": [
+        {
+          "binding": "QA_EVENTS",
+          "dataset": "qa_monitoring_prod"
+        },
+        {
+          "binding": "PRODUCTION_METRICS",
+          "dataset": "production_metrics_prod"
+        },
+        {
+          "binding": "DEVIATION_TRACKING",
+          "dataset": "deviation_tracking_prod"
+        }
+      ]
+    },
+
+    "staging": {
+      "name": "lean-manufacturing-qms-staging",
+      "routes": [
+        {
+          "pattern": "api-staging.yourdomain.com/*",
+          "zone_name": "yourdomain.com"
+        }
+      ],
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "qa_factory_db_staging",
+          "database_id": "YOUR_STAGING_D1_DATABASE_ID"
+        }
+      ],
+      "kv_namespaces": [
+        {
+          "binding": "MASTER_DATA",
+          "id": "YOUR_STAGING_KV_MASTER_DATA_ID",
+          "preview_id": "YOUR_STAGING_KV_PREVIEW_ID"
+        },
+        {
+          "binding": "SESSION_STORE",
+          "id": "YOUR_STAGING_KV_SESSION_ID",
+          "preview_id": "YOUR_STAGING_KV_SESSION_PREVIEW_ID"
+        },
+        {
+          "binding": "CACHE",
+          "id": "YOUR_STAGING_KV_CACHE_ID",
+          "preview_id": "YOUR_STAGING_KV_CACHE_PREVIEW_ID"
+        }
+      ],
+      "vars": {
+        "ENVIRONMENT": "staging",
+        "LOG_LEVEL": "debug",
+        "GOOGLE_SHEET_ID": "YOUR_STAGING_GOOGLE_SHEET_ID",
+        "SLACK_CHANNEL": "#qa-alerts-staging",
+        "ALERT_SEVERITY_THRESHOLD": "minor",
+        "CAPA_AUTO_ASSIGN": "true",
+        "EMAIL_NOTIFICATION_ENABLED": "true",
+        "ENABLE_RATE_LIMITING": "true",
+        "RATE_LIMIT_REQUESTS_PER_MINUTE": "500"
+      }
+    },
+
+    "development": {
+      "name": "lean-manufacturing-qms-dev",
+      "vars": {
+        "ENVIRONMENT": "development",
+        "LOG_LEVEL": "debug",
+        "GOOGLE_SHEET_ID": "YOUR_DEV_GOOGLE_SHEET_ID",
+        "SLACK_CHANNEL": "#qa-alerts-dev",
+        "ALERT_SEVERITY_THRESHOLD": "info",
+        "CAPA_AUTO_ASSIGN": "false",
+        "EMAIL_NOTIFICATION_ENABLED": "false",
+        "ENABLE_RATE_LIMITING": "false"
+      }
+    }
+  },
+
+  // ==================== OBSERVABILITY & MONITORING ====================
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  },
+
+  // ==================== LIMITS & PERFORMANCE ====================
+  "limits": {
+    "cpu_milliseconds": 50000
+  },
+
+  // ==================== TRIGGERS ====================
+  "triggers": {
+    "crons": [
+      "0 0 * * *",
+      "0 */6 * * *",
+      "0 9 * * 1"
+    ]
+  },
+
+  // ==================== ACCOUNT ID ====================
+  "account_id": "YOUR_CLOUDFLARE_ACCOUNT_ID"
+}

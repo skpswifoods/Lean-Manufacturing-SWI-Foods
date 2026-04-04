@@ -2,6 +2,7 @@
 
 import { Hono } from 'hono';
 import { handleMasterDataUpload } from '../master-data-init';
+import GoogleWorkspaceIntegration from '../integrations/google-workspace';
 
 export function createMasterDataRoutes(app: Hono) {
   /**

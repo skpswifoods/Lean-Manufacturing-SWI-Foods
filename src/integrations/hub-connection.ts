@@ -278,8 +278,8 @@ class HubConnectionManager {
     };
 
     const payload_obj = {
-      @type: 'MessageCard',
-      @context: 'https://schema.org/extensions',
+      '@type': 'MessageCard',
+      '@context': 'https://schema.org/extensions',
       summary: payload.title,
       themeColor: themeColor[payload.severity],
       sections: [
@@ -307,7 +307,7 @@ class HubConnectionManager {
           ],
           potentialAction: [
             {
-              @type: 'OpenUri',
+              '@type': 'OpenUri',
               name: 'View Details',
               targets: [
                 {

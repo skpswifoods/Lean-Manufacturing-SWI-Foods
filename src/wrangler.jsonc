@@ -1,47 +1,326 @@
-export default {
-  async fetch(request, env, ctx) {
-    const url = new URL(request.url);
-    const method = request.method;
+// wrangler.jsonc
+{
+  "name": "lean-swi-foods",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-03-07",
+  "compatibility_flags": ["nodejs_compat"],
+  "node_compat": true,
 
-    // --- 1. ระบบ Sync ข้อมูล (Google Sheets) ---
-    if (url.pathname === "/api/sync/master-data" && method === "POST") {
-      return handleSyncMasterData(request, env);
+  // ==================== DATABASE CONFIGURATION ====================
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "qa_factory_db",
+      "database_id": "YOUR_D1_DATABASE_ID",
+      "migrations_dir": "src/migrations"
     }
+  ],
 
-    // --- 2. บันทึกผลการตรวจ & Sync (Google Sheets) ---
-    if (url.pathname === "/api/inspection/record-and-sync" && method === "POST") {
-      return handleInspectionRecord(request, env);
+  // ==================== KEY-VALUE STORAGE ====================
+  "kv_namespaces": [
+    {
+      "binding": "MASTER_DATA",
+      "id": "YOUR_KV_MASTER_DATA_ID",
+      "preview_id": "YOUR_KV_PREVIEW_ID"
+    },
+    {
+      "binding": "SESSION_STORE",
+      "id": "YOUR_KV_SESSION_ID",
+      "preview_id": "YOUR_KV_SESSION_PREVIEW_ID"
+    },
+    {
+      "binding": "CACHE",
+      "id": "YOUR_KV_CACHE_ID",
+      "preview_id": "YOUR_KV_CACHE_PREVIEW_ID"
     }
+  ],
 
-    // --- 3 & 7. ระบบแจ้งเตือน (Slack / Teams) ---
-    if (url.pathname.startsWith("/api/notify/") && method === "POST") {
-      return handleNotifications(request, env);
+  // ==================== ANALYTICS ====================
+  "analytics_engine_datasets": [
+    {
+      "binding": "QA_EVENTS",
+      "dataset": "qa_monitoring"
+    },
+    {
+      "binding": "PRODUCTION_METRICS",
+      "dataset": "production_metrics"
+    },
+    {
+      "binding": "DEVIATION_TRACKING",
+      "dataset": "deviation_tracking"
     }
+  ],
 
-    // --- 5. อัปโหลดไฟล์ (Google Drive) ---
-    if (url.pathname === "/api/documents/upload" && method === "POST") {
-      return handleFileUpload(request, env);
+  // ==================== MESSAGE QUEUE ====================
+  "queues": {
+    "producers": [
+      {
+        "name": "qa-events-queue",
+        "binding": "QUEUE"
+      }
+    ],
+    "consumers": [
+      {
+        "name": "qa-events-queue",
+        "max_batch_size": 10,
+        "max_batch_timeout": 30,
+        "max_retries": 3,
+        "dead_letter_queue": "qa-events-dlq",
+        "max_concurrency": 5
+      }
+    ]
+  },
+
+  // ==================== DURABLE OBJECTS ====================
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "BATCH_STATE",
+        "class_name": "BatchStateManager"
+      },
+      {
+        "name": "PRODUCTION_MONITOR",
+        "class_name": "ProductionMonitor"
+      }
+    ]
+  },
+
+  // ==================== MIGRATIONS ====================
+  "migrations": [
+    {
+      "tag": "v001_initial_schema",
+      "name": "Initial database schema setup"
+    },
+    {
+      "tag": "v002_master_data_tables",
+      "name": "Master data tables"
     }
+  ],
 
-    // --- 6. สร้าง Form ใหม่ ---
-    if (url.pathname === "/api/forms/create-ghp-form" && method === "POST") {
-      return handleFormCreation(request, env);
+  // ==================== ENVIRONMENT VARIABLES ====================
+  "vars": {
+    "ENVIRONMENT": "production",
+    "LOG_LEVEL": "info",
+    "API_VERSION": "v1",
+    "GOOGLE_SHEET_ID": "YOUR_GOOGLE_SHEET_ID",
+    "SLACK_CHANNEL": "#qa-alerts",
+    "TEAMS_SPACE_ID": "YOUR_TEAMS_SPACE_ID",
+    "ALERT_SEVERITY_THRESHOLD": "major",
+    "BATCH_TIMEOUT_HOURS": "24",
+    "INSPECTION_FORM_ID": "YOUR_GOOGLE_FORM_ID",
+    "QA_DASHBOARD_URL": "https://dashboard.yourdomain.com",
+    "CAPA_AUTO_ASSIGN": "true",
+    "EMAIL_NOTIFICATION_ENABLED": "true"
+  },
+
+  // ==================== ROUTES & DOMAINS ====================
+  "routes": [
+    {
+      "pattern": "api.yourdomain.com/api/*",
+      "zone_name": "yourdomain.com"
+    },
+    {
+      "pattern": "api-staging.yourdomain.com/api/*",
+      "zone_name": "yourdomain.com",
+      "custom_domain": true
     }
+  ],
 
-    return new Response("QA API System Online", { status: 200 });
-  }
-};
+  // ==================== ENVIRONMENT-SPECIFIC CONFIGURATION ====================
+  "env": {
+    "production": {
+      "name": "lean-manufacturing-qms-prod",
+      "routes": [
+        {
+          "pattern": "api.yourdomain.com/*",
+          "zone_name": "yourdomain.com"
+        }
+      ],
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "qa_factory_db_prod",
+          "database_id": "YOUR_PROD_D1_DATABASE_ID"
+        }
+      ],
+      "kv_namespaces": [
+        {
+          "binding": "MASTER_DATA",
+          "id": "YOUR_PROD_KV_MASTER_DATA_ID",
+          "preview_id": "YOUR_PROD_KV_PREVIEW_ID"
+        },
+        {
+          "binding": "SESSION_STORE",
+          "id": "YOUR_PROD_KV_SESSION_ID",
+          "preview_id": "YOUR_PROD_KV_SESSION_PREVIEW_ID"
+        },
+        {
+          "binding": "CACHE",
+          "id": "YOUR_PROD_KV_CACHE_ID",
+          "preview_id": "YOUR_PROD_KV_CACHE_PREVIEW_ID"
+        }
+      ],
+      "vars": {
+        "ENVIRONMENT": "production",
+        "LOG_LEVEL": "warn",
+        "GOOGLE_SHEET_ID": "YOUR_PROD_GOOGLE_SHEET_ID",
+        "SLACK_CHANNEL": "#qa-alerts-production",
+        "ALERT_SEVERITY_THRESHOLD": "major",
+        "CAPA_AUTO_ASSIGN": "true",
+        "EMAIL_NOTIFICATION_ENABLED": "true",
+        "ENABLE_RATE_LIMITING": "true",
+        "RATE_LIMIT_REQUESTS_PER_MINUTE": "100"
+      },
+      "secrets": [
+        "GOOGLE_SERVICE_ACCOUNT_KEY",
+        "GOOGLE_SERVICE_ACCOUNT_EMAIL",
+        "SLACK_WEBHOOK_URL",
+        "SLACK_BOT_TOKEN",
+        "TEAMS_WEBHOOK_URL",
+        "TEAMS_BOT_APP_ID",
+        "GOOGLE_CHAT_WEBHOOK_URL",
+        "JWT_SECRET",
+        "ENCRYPTION_KEY",
+        "DATABASE_ENCRYPTION_KEY",
+        "SENDGRID_API_KEY"
+      ],
+      "analytics_engine_datasets": [
+        {
+          "binding": "QA_EVENTS",
+          "dataset": "qa_monitoring_prod"
+        },
+        {
+          "binding": "PRODUCTION_METRICS",
+          "dataset": "production_metrics_prod"
+        },
+        {
+          "binding": "DEVIATION_TRACKING",
+          "dataset": "deviation_tracking_prod"
+        }
+      ]
+    },
 
-// ตัวอย่างฟังก์ชันสำหรับแจ้งเตือน (Slack/Teams)
-async function handleNotifications(request, env) {
-  const data = await request.json();
-  const webhookUrl = data.platform === 'slack' ? env.SLACK_WEBHOOK : env.TEAMS_WEBHOOK;
-  
-  // Logic ในการส่ง Fetch ไปยัง Slack/Teams API
-  await fetch(webhookUrl, {
-    method: 'POST',
-    body: JSON.stringify({ text: `Alert: ${data.description || data.capa_id}` })
-  });
+    "staging": {
+      "name": "lean-manufacturing-qms-staging",
+      "routes": [
+        {
+          "pattern": "api-staging.yourdomain.com/*",
+          "zone_name": "yourdomain.com"
+        }
+      ],
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "qa_factory_db_staging",
+          "database_id": "YOUR_STAGING_D1_DATABASE_ID"
+        }
+      ],
+      "kv_namespaces": [
+        {
+          "binding": "MASTER_DATA",
+          "id": "YOUR_STAGING_KV_MASTER_DATA_ID",
+          "preview_id": "YOUR_STAGING_KV_PREVIEW_ID"
+        },
+        {
+          "binding": "SESSION_STORE",
+          "id": "YOUR_STAGING_KV_SESSION_ID",
+          "preview_id": "YOUR_STAGING_KV_SESSION_PREVIEW_ID"
+        },
+        {
+          "binding": "CACHE",
+          "id": "YOUR_STAGING_KV_CACHE_ID",
+          "preview_id": "YOUR_STAGING_KV_CACHE_PREVIEW_ID"
+        }
+      ],
+      "vars": {
+        "ENVIRONMENT": "staging",
+        "LOG_LEVEL": "debug",
+        "GOOGLE_SHEET_ID": "YOUR_STAGING_GOOGLE_SHEET_ID",
+        "SLACK_CHANNEL": "#qa-alerts-staging",
+        "ALERT_SEVERITY_THRESHOLD": "minor",
+        "CAPA_AUTO_ASSIGN": "true",
+        "EMAIL_NOTIFICATION_ENABLED": "true",
+        "ENABLE_RATE_LIMITING": "true",
+        "RATE_LIMIT_REQUESTS_PER_MINUTE": "500"
+      },
+      "secrets": [
+        "GOOGLE_SERVICE_ACCOUNT_KEY",
+        "GOOGLE_SERVICE_ACCOUNT_EMAIL",
+        "SLACK_WEBHOOK_URL",
+        "SLACK_BOT_TOKEN",
+        "TEAMS_WEBHOOK_URL",
+        "TEAMS_BOT_APP_ID",
+        "GOOGLE_CHAT_WEBHOOK_URL",
+        "JWT_SECRET",
+        "ENCRYPTION_KEY",
+        "DATABASE_ENCRYPTION_KEY",
+        "SENDGRID_API_KEY"
+      ]
+    },
 
-  return new Response("Notification Sent!");
+    "development": {
+      "name": "lean-manufacturing-qms-dev",
+      "vars": {
+        "ENVIRONMENT": "development",
+        "LOG_LEVEL": "debug",
+        "GOOGLE_SHEET_ID": "YOUR_DEV_GOOGLE_SHEET_ID",
+        "SLACK_CHANNEL": "#qa-alerts-dev",
+        "ALERT_SEVERITY_THRESHOLD": "info",
+        "CAPA_AUTO_ASSIGN": "false",
+        "EMAIL_NOTIFICATION_ENABLED": "false",
+        "ENABLE_RATE_LIMITING": "false"
+      },
+      "secrets": [
+        "GOOGLE_SERVICE_ACCOUNT_KEY",
+        "SLACK_WEBHOOK_URL",
+        "TEAMS_WEBHOOK_URL",
+        "GOOGLE_CHAT_WEBHOOK_URL",
+        "JWT_SECRET",
+        "ENCRYPTION_KEY",
+        "DATABASE_ENCRYPTION_KEY"
+      ]
+    }
+  },
+
+  // ==================== OBSERVABILITY & MONITORING ====================
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  },
+
+  // ==================== BUILD CONFIGURATION ====================
+  "build": {
+    "cwd": ".",
+    "command": "npm run build",
+    "upload": {
+      "main": "./dist/index.js",
+      "rules": [
+        {
+          "type": "CompiledContentType",
+          "globs": ["**/*.wasm"],
+          "fallthrough": true
+        }
+      ]
+    }
+  },
+
+  // ==================== LIMITS & PERFORMANCE ====================
+  "limits": {
+    "cpu_milliseconds": 50000
+  },
+
+  // ==================== TRIGGERS ====================
+  "triggers": {
+    "crons": [
+      "0 0 * * *",
+      "0 */6 * * *",
+      "0 9 * * 1"
+    ]
+  },
+
+  // ==================== ACCOUNT ID ====================
+  "account_id": "YOUR_CLOUDFLARE_ACCOUNT_ID",
+
+  // ==================== ZONE ID ====================
+  "zone_id": "YOUR_CLOUDFLARE_ZONE_ID"
 }

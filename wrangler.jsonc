@@ -1,6 +1,6 @@
 // wrangler.jsonc
 {
-  "name": "lean-manufacturing-qms-integrated",
+  "name": "lean-swi-foods",
   "main": "src/index.ts",
   "compatibility_date": "2025-03-07",
   "compatibility_flags": ["nodejs_compat"],

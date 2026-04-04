@@ -1,27 +1,47 @@
-// wrangler.jsonc
-{
-  "name": "lean-swi-foods",
-  "main": "src/index.ts",
-  "compatibility_date": "2025-03-07",
-  "compatibility_flags": ["nodejs_compat"],
+export default {
+  async fetch(request, env, ctx) {
+    const url = new URL(request.url);
+    const method = request.method;
 
-  "d1_databases": [
-    {
-      "binding": "DB",
-      "database_name": "qa_factory_db",
-      "database_id": "YOUR_DB_ID"
+    // --- 1. ระบบ Sync ข้อมูล (Google Sheets) ---
+    if (url.pathname === "/api/sync/master-data" && method === "POST") {
+      return handleSyncMasterData(request, env);
     }
-  ],
 
-  "kv_namespaces": [
-    {
-      "binding": "MASTER_DATA",
-      "id": "YOUR_KV_ID",
-      "preview_id": "YOUR_PREVIEW_ID"
+    // --- 2. บันทึกผลการตรวจ & Sync (Google Sheets) ---
+    if (url.pathname === "/api/inspection/record-and-sync" && method === "POST") {
+      return handleInspectionRecord(request, env);
     }
-  ],
-{
-  "observability" {
-    "enabled": false
+
+    // --- 3 & 7. ระบบแจ้งเตือน (Slack / Teams) ---
+    if (url.pathname.startsWith("/api/notify/") && method === "POST") {
+      return handleNotifications(request, env);
+    }
+
+    // --- 5. อัปโหลดไฟล์ (Google Drive) ---
+    if (url.pathname === "/api/documents/upload" && method === "POST") {
+      return handleFileUpload(request, env);
+    }
+
+    // --- 6. สร้าง Form ใหม่ ---
+    if (url.pathname === "/api/forms/create-ghp-form" && method === "POST") {
+      return handleFormCreation(request, env);
+    }
+
+    return new Response("QA API System Online", { status: 200 });
   }
+};
+
+// ตัวอย่างฟังก์ชันสำหรับแจ้งเตือน (Slack/Teams)
+async function handleNotifications(request, env) {
+  const data = await request.json();
+  const webhookUrl = data.platform === 'slack' ? env.SLACK_WEBHOOK : env.TEAMS_WEBHOOK;
+  
+  // Logic ในการส่ง Fetch ไปยัง Slack/Teams API
+  await fetch(webhookUrl, {
+    method: 'POST',
+    body: JSON.stringify({ text: `Alert: ${data.description || data.capa_id}` })
+  });
+
+  return new Response("Notification Sent!");
 }

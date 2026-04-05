@@ -9,12 +9,6 @@ export interface Env {
   MASTER_DATA: KVNamespace;
   SESSION_STORE: KVNamespace;
   CACHE: KVNamespace;
-  QA_EVENTS: AnalyticsEngineDataset;
-  PRODUCTION_METRICS: AnalyticsEngineDataset;
-  DEVIATION_TRACKING: AnalyticsEngineDataset;
-BATCH_STATE: DurableObjectNamespace;
-  PRODUCTION_MONITOR: DurableObjectNamespace;
-
   // Secrets
   GOOGLE_SERVICE_ACCOUNT_KEY: string;
   GOOGLE_SERVICE_ACCOUNT_EMAIL: string;
@@ -78,25 +72,3 @@ app.onError((err, c) => {
 });
 
 export default app;
-
-// ==================== DURABLE OBJECTS ====================
-
-export class BatchStateManager {
-  state: DurableObjectState;
-  constructor(state: DurableObjectState) {
-    this.state = state;
-  }
-  async fetch(request: Request): Promise<Response> {
-    return new Response('BatchStateManager', { status: 200 });
-  }
-}
-
-export class ProductionMonitor {
-  state: DurableObjectState;
-  constructor(state: DurableObjectState) {
-    this.state = state;
-  }
-  async fetch(request: Request): Promise<Response> {
-    return new Response('ProductionMonitor', { status: 200 });
-  }
-}

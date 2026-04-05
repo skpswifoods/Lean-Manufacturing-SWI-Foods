@@ -12,8 +12,7 @@ export interface Env {
   QA_EVENTS: AnalyticsEngineDataset;
   PRODUCTION_METRICS: AnalyticsEngineDataset;
   DEVIATION_TRACKING: AnalyticsEngineDataset;
-  QUEUE: Queue;
-  BATCH_STATE: DurableObjectNamespace;
+BATCH_STATE: DurableObjectNamespace;
   PRODUCTION_MONITOR: DurableObjectNamespace;
 
   // Secrets

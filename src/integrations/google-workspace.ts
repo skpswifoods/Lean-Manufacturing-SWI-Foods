@@ -198,7 +198,7 @@ class GoogleWorkspaceIntegration {
           values: [[
             record.date, record.type, record.status, record.batch_id,
             record.lot_number, record.result, record.inspector,
-            record.result === 'PASS' ? '✓' : '✗',
+            record.result === 'PASS' ? '\u2713' : '\u2717',
           ]],
         }),
       }
@@ -216,14 +216,12 @@ class GoogleWorkspaceIntegration {
     const headers = await this.authHeaders();
     const sheetName = `QA_Report_${reportData.date.replace(/-/g, '')}`;
 
-    // Create new sheet
     await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}:batchUpdate`, {
       method: 'POST',
       headers,
       body: JSON.stringify({ requests: [{ addSheet: { properties: { title: sheetName } } }] }),
     });
 
-    // Write report data
     await fetch(
       `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${sheetName}!A1?valueInputOption=USER_ENTERED`,
       {
@@ -232,7 +230,7 @@ class GoogleWorkspaceIntegration {
         body: JSON.stringify({
           values: [
             ['Daily QA Report'], ['Date', reportData.date], [''],
-            ['Metric', 'Count', 'Status'],
+            ['Metric', 'Count'],
             ['Total Inspections', reportData.total_inspections],
             ['Passed', reportData.passed],
             ['Failed', reportData.failed],
@@ -259,22 +257,20 @@ class GoogleWorkspaceIntegration {
     });
 
     const boundary = '-------boundary';
-    const body = [
-      `--${boundary}\r\nContent-Type: application/json\r\n\r\n${metadata}`,
-      `\r\n--${boundary}\r\nContent-Type: ${mimeType}\r\n\r\n`,
-    ].join('');
+    const bodyStart = `--${boundary}\r\nContent-Type: application/json\r\n\r\n${metadata}\r\n--${boundary}\r\nContent-Type: ${mimeType}\r\n\r\n`;
+    const bodyEnd = `\r\n--${boundary}--`;
 
-    const bodyBytes = new TextEncoder().encode(body);
+    const startBytes = new TextEncoder().encode(bodyStart);
     const fileBytes = new Uint8Array(fileContent);
-    const endBytes = new TextEncoder().encode(`\r\n--${boundary}--`);
+    const endBytes = new TextEncoder().encode(bodyEnd);
 
-    const combined = new Uint8Array(bodyBytes.length + fileBytes.length + endBytes.length);
-    combined.set(bodyBytes, 0);
-    combined.set(fileBytes, bodyBytes.length);
-    combined.set(endBytes, bodyBytes.length + fileBytes.length);
+    const combined = new Uint8Array(startBytes.length + fileBytes.length + endBytes.length);
+    combined.set(startBytes, 0);
+    combined.set(fileBytes, startBytes.length);
+    combined.set(endBytes, startBytes.length + fileBytes.length);
 
     const res = await fetch(
-      'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,webViewLink,createdTime',
+      'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,webViewLink',
       {
         method: 'POST',
         headers: {
@@ -308,15 +304,7 @@ class GoogleWorkspaceIntegration {
       { createItem: { item: { title: 'Inspector Name', questionItem: { question: { required: true, textQuestion: { paragraph: false } } } }, location: { index: 1 } } },
       ...checkpoints.map((checkpoint, index) => ({
         createItem: {
-          item: {
-            title: checkpoint,
-            questionItem: {
-              question: {
-                required: true,
-                choiceQuestion: { type: 'RADIO', options: [{ value: 'PASS' }, { value: 'FAIL' }, { value: 'N/A' }] },
-              },
-            },
-          },
+          item: { title: checkpoint, questionItem: { question: { required: true, choiceQuestion: { type: 'RADIO', options: [{ value: 'PASS' }, { value: 'FAIL' }, { value: 'N/A' }] } } } },
           location: { index: index + 2 },
         },
       })),
@@ -338,8 +326,6 @@ class GoogleWorkspaceIntegration {
     webhookUrl: string,
     message: { title: string; severity: 'info' | 'warning' | 'critical'; description: string; batch_id?: string; lot_id?: string; action_required?: string }
   ) {
-    const color = { info: '#4285F4', warning: '#FBBC04', critical: '#EA4335' }[message.severity];
-
     const payload = {
       cards: [{
         header: { title: message.title, subtitle: `Severity: ${message.severity.toUpperCase()}` },
@@ -368,17 +354,13 @@ class GoogleWorkspaceIntegration {
     capaData: { capa_id: string; deviation_type: string; assigned_to: string; deadline: string }
   ) {
     const headers = await this.authHeaders();
-
-    const message = {
-      text: `🔔 New CAPA Assignment\n\nCAPA ID: ${capaData.capa_id}\nDeviation Type: ${capaData.deviation_type}\nAssigned To: ${capaData.assigned_to}\nDeadline: ${capaData.deadline}`,
-    };
-
     await fetch(`https://chat.googleapis.com/v1/${spaceId}/messages`, {
       method: 'POST',
       headers,
-      body: JSON.stringify(message),
+      body: JSON.stringify({
+        text: `New CAPA Assignment\n\nCAPA ID: ${capaData.capa_id}\nDeviation Type: ${capaData.deviation_type}\nAssigned To: ${capaData.assigned_to}\nDeadline: ${capaData.deadline}`,
+      }),
     });
-
     return { success: true };
   }
 }

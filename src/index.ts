@@ -9,9 +9,6 @@ export interface Env {
   MASTER_DATA: KVNamespace;
   SESSION_STORE: KVNamespace;
   CACHE: KVNamespace;
-  BATCH_STATE: DurableObjectNamespace;
-  PRODUCTION_MONITOR: DurableObjectNamespace;
-
   // Secrets
   GOOGLE_SERVICE_ACCOUNT_KEY: string;
   GOOGLE_SERVICE_ACCOUNT_EMAIL: string;

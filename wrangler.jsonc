@@ -37,28 +37,6 @@
   // ==================== ANALYTICS ENGINE (disabled - not enabled on account) ====================
   "analytics_engine_datasets": [],
 
-  // ==================== DURABLE OBJECTS ====================
-  "durable_objects": {
-    "bindings": [
-      {
-        "name": "BATCH_STATE",
-        "class_name": "BatchStateManager"
-      },
-      {
-        "name": "PRODUCTION_MONITOR",
-        "class_name": "ProductionMonitor"
-      }
-    ]
-  },
-
-  // ==================== DURABLE OBJECTS MIGRATIONS ====================
-  "migrations": [
-    {
-      "tag": "v1",
-      "new_classes": ["BatchStateManager", "ProductionMonitor"]
-    }
-  ],
-
   // ==================== ENVIRONMENT VARIABLES ====================
   "vars": {
     "ENVIRONMENT": "production",

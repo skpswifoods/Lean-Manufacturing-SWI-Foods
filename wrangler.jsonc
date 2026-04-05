@@ -4,18 +4,16 @@
   "main": "src/index.ts",
   "compatibility_date": "2025-03-07",
   "compatibility_flags": ["nodejs_compat"],
+  "account_id": "acd0ef2518aed1f77c126d0592469ae1",
 
-  // ==================== DATABASE CONFIGURATION ====================
   "d1_databases": [
     {
       "binding": "DB",
       "database_name": "qa-factory-db",
-      "database_id": "391d171b-81b2-4156-bff0-ad9f0ae7e6af",
-      "migrations_dir": "src/migrations"
+      "database_id": "391d171b-81b2-4156-bff0-ad9f0ae7e6af"
     }
   ],
 
-  // ==================== KEY-VALUE STORAGE ====================
   "kv_namespaces": [
     {
       "binding": "MASTER_DATA",
@@ -34,10 +32,10 @@
     }
   ],
 
-  // ==================== ANALYTICS ENGINE (disabled - not enabled on account) ====================
+  // Explicitly empty to override any previously-stored Cloudflare-side bindings
   "analytics_engine_datasets": [],
+  "durable_objects": { "bindings": [] },
 
-  // ==================== ENVIRONMENT VARIABLES ====================
   "vars": {
     "ENVIRONMENT": "production",
     "LOG_LEVEL": "info",
@@ -53,26 +51,15 @@
     "EMAIL_NOTIFICATION_ENABLED": "true"
   },
 
-  // ==================== OBSERVABILITY & MONITORING ====================
   "observability": {
-    "enabled": true,
-    "head_sampling_rate": 1
+    "enabled": true
   },
 
-  // ==================== LIMITS & PERFORMANCE ====================
-  "limits": {
-    "cpu_ms": 50000
-  },
-
-  // ==================== TRIGGERS ====================
   "triggers": {
     "crons": [
       "0 0 * * *",
       "0 */6 * * *",
       "0 9 * * 1"
     ]
-  },
-
-  // ==================== ACCOUNT ID ====================
-  "account_id": "acd0ef2518aed1f77c126d0592469ae1"
+  }
 }

@@ -72,25 +72,3 @@ app.onError((err, c) => {
 });
 
 export default app;
-
-// ==================== DURABLE OBJECTS ====================
-
-export class BatchStateManager {
-  state: DurableObjectState;
-  constructor(state: DurableObjectState) {
-    this.state = state;
-  }
-  async fetch(request: Request): Promise<Response> {
-    return new Response('BatchStateManager', { status: 200 });
-  }
-}
-
-export class ProductionMonitor {
-  state: DurableObjectState;
-  constructor(state: DurableObjectState) {
-    this.state = state;
-  }
-  async fetch(request: Request): Promise<Response> {
-    return new Response('ProductionMonitor', { status: 200 });
-  }
-}

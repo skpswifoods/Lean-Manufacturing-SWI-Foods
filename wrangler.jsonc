@@ -34,22 +34,6 @@
     }
   ],
 
-  // ==================== ANALYTICS ====================
-  "analytics_engine_datasets": [
-    {
-      "binding": "QA_EVENTS",
-      "dataset": "qa_monitoring"
-    },
-    {
-      "binding": "PRODUCTION_METRICS",
-      "dataset": "production_metrics"
-    },
-    {
-      "binding": "DEVIATION_TRACKING",
-      "dataset": "deviation_tracking"
-    }
-  ],
-
   // ==================== DURABLE OBJECTS ====================
   "durable_objects": {
     "bindings": [

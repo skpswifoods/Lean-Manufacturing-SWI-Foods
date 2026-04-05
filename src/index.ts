@@ -9,9 +9,6 @@ export interface Env {
   MASTER_DATA: KVNamespace;
   SESSION_STORE: KVNamespace;
   CACHE: KVNamespace;
-  QA_EVENTS: AnalyticsEngineDataset;
-  PRODUCTION_METRICS: AnalyticsEngineDataset;
-  DEVIATION_TRACKING: AnalyticsEngineDataset;
   BATCH_STATE: DurableObjectNamespace;
   PRODUCTION_MONITOR: DurableObjectNamespace;
 

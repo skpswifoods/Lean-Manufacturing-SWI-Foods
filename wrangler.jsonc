@@ -38,7 +38,17 @@
 
   "vars": {
     "ENVIRONMENT": "production",
-    "API_VERSION": "v1"
+    "LOG_LEVEL": "info",
+    "API_VERSION": "v1",
+    "GOOGLE_SHEET_ID": "YOUR_GOOGLE_SHEET_ID",
+    "SLACK_CHANNEL": "#qa-alerts",
+    "TEAMS_SPACE_ID": "YOUR_TEAMS_SPACE_ID",
+    "ALERT_SEVERITY_THRESHOLD": "major",
+    "BATCH_TIMEOUT_HOURS": "24",
+    "INSPECTION_FORM_ID": "YOUR_GOOGLE_FORM_ID",
+    "QA_DASHBOARD_URL": "https://dashboard.yourdomain.com",
+    "CAPA_AUTO_ASSIGN": "true",
+    "EMAIL_NOTIFICATION_ENABLED": "true"
   },
 
   "observability": {

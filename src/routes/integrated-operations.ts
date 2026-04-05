@@ -1,7 +1,7 @@
 // src/routes/integrated-operations.ts
 
 import { Hono } from 'hono';
-import GoogleWorkspaceIntegration from '../integrations/google-workspace';
+import GoogleWorkspaceIntegration from '../integrations/google-workspace-v2';
 import HubConnectionManager from '../integrations/hub-connection';
 
 interface IntegratedEnv {

@@ -50,26 +50,6 @@
     }
   ],
 
-  // ==================== MESSAGE QUEUE ====================
-  "queues": {
-    "producers": [
-      {
-        "queue": "qa-events-queue",
-        "binding": "QUEUE"
-      }
-    ],
-    "consumers": [
-      {
-        "queue": "qa-events-queue",
-        "max_batch_size": 10,
-        "max_batch_timeout": 30,
-        "max_retries": 3,
-        "dead_letter_queue": "qa-events-dlq",
-        "max_concurrency": 5
-      }
-    ]
-  },
-
   // ==================== DURABLE OBJECTS ====================
   "durable_objects": {
     "bindings": [

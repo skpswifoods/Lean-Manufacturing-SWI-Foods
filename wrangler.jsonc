@@ -50,7 +50,7 @@
     }
   ],
 
-// ==================== DURABLE OBJECTS ====================
+  // ==================== DURABLE OBJECTS ====================
   "durable_objects": {
     "bindings": [
       {

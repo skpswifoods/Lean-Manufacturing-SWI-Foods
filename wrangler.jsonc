@@ -54,13 +54,13 @@
   "queues": {
     "producers": [
       {
-        "name": "qa-events-queue",
+        "queue": "qa-events-queue",
         "binding": "QUEUE"
       }
     ],
     "consumers": [
       {
-        "name": "qa-events-queue",
+        "queue": "qa-events-queue",
         "max_batch_size": 10,
         "max_batch_timeout": 30,
         "max_retries": 3,
@@ -245,7 +245,7 @@
 
   // ==================== LIMITS & PERFORMANCE ====================
   "limits": {
-    "cpu_milliseconds": 50000
+    "cpu_ms": 50000
   },
 
   // ==================== TRIGGERS ====================

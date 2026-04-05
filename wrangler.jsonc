@@ -34,6 +34,9 @@
     }
   ],
 
+  // ==================== ANALYTICS ENGINE (disabled - not enabled on account) ====================
+  "analytics_engine_datasets": [],
+
   // ==================== DURABLE OBJECTS ====================
   "durable_objects": {
     "bindings": [

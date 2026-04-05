@@ -4,18 +4,16 @@
   "main": "src/index.ts",
   "compatibility_date": "2025-03-07",
   "compatibility_flags": ["nodejs_compat"],
+  "account_id": "acd0ef2518aed1f77c126d0592469ae1",
 
-  // ==================== DATABASE CONFIGURATION ====================
   "d1_databases": [
     {
       "binding": "DB",
       "database_name": "qa-factory-db",
-      "database_id": "391d171b-81b2-4156-bff0-ad9f0ae7e6af",
-      "migrations_dir": "src/migrations"
+      "database_id": "391d171b-81b2-4156-bff0-ad9f0ae7e6af"
     }
   ],
 
-  // ==================== KEY-VALUE STORAGE ====================
   "kv_namespaces": [
     {
       "binding": "MASTER_DATA",
@@ -34,80 +32,12 @@
     }
   ],
 
-  // ==================== ANALYTICS ====================
-  "analytics_engine_datasets": [
-    {
-      "binding": "QA_EVENTS",
-      "dataset": "qa_monitoring"
-    },
-    {
-      "binding": "PRODUCTION_METRICS",
-      "dataset": "production_metrics"
-    },
-    {
-      "binding": "DEVIATION_TRACKING",
-      "dataset": "deviation_tracking"
-    }
-  ],
-
-  // ==================== DURABLE OBJECTS ====================
-  "durable_objects": {
-    "bindings": [
-      {
-        "name": "BATCH_STATE",
-        "class_name": "BatchStateManager"
-      },
-      {
-        "name": "PRODUCTION_MONITOR",
-        "class_name": "ProductionMonitor"
-      }
-    ]
-  },
-
-  // ==================== DURABLE OBJECTS MIGRATIONS ====================
-  "migrations": [
-    {
-      "tag": "v1",
-      "new_classes": ["BatchStateManager", "ProductionMonitor"]
-    }
-  ],
-
-  // ==================== ENVIRONMENT VARIABLES ====================
   "vars": {
     "ENVIRONMENT": "production",
-    "LOG_LEVEL": "info",
-    "API_VERSION": "v1",
-    "GOOGLE_SHEET_ID": "YOUR_GOOGLE_SHEET_ID",
-    "SLACK_CHANNEL": "#qa-alerts",
-    "TEAMS_SPACE_ID": "YOUR_TEAMS_SPACE_ID",
-    "ALERT_SEVERITY_THRESHOLD": "major",
-    "BATCH_TIMEOUT_HOURS": "24",
-    "INSPECTION_FORM_ID": "YOUR_GOOGLE_FORM_ID",
-    "QA_DASHBOARD_URL": "https://dashboard.yourdomain.com",
-    "CAPA_AUTO_ASSIGN": "true",
-    "EMAIL_NOTIFICATION_ENABLED": "true"
+    "API_VERSION": "v1"
   },
 
-  // ==================== OBSERVABILITY & MONITORING ====================
   "observability": {
-    "enabled": true,
-    "head_sampling_rate": 1
-  },
-
-  // ==================== LIMITS & PERFORMANCE ====================
-  "limits": {
-    "cpu_ms": 50000
-  },
-
-  // ==================== TRIGGERS ====================
-  "triggers": {
-    "crons": [
-      "0 0 * * *",
-      "0 */6 * * *",
-      "0 9 * * 1"
-    ]
-  },
-
-  // ==================== ACCOUNT ID ====================
-  "account_id": "acd0ef2518aed1f77c126d0592469ae1"
+    "enabled": true
+  }
 }
